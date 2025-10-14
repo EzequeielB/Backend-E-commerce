@@ -10,7 +10,7 @@ import {
 const productRoutes = Router();
 
 rolesRoutes.post("/create", productsCreate),
-  rolesRoutes.get("/list", productsList);
+rolesRoutes.get("/list", productsList);
 rolesRoutes.get("/:id", productById);
 rolesRoutes.delete("/delete/:id", productDelete);
 rolesRoutes.put("/update/:id", productUpdate);
