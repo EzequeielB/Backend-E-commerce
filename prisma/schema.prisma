@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int               @id @default(autoincrement())
+  user_name        String
+  email            String            @unique
+  password         String
+  CreadoEn         DateTime          @default(now()) @map("created_at")
+  carrito          Cart?
+  role             Role              @relation(fields: [roleId], references: [id])
+  roleId           Int
+  wish_list        Wish_List?
+  reset_token      Reset_token?
+  shipping_Address Shipping_Address?
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String
+  is_Deleted  Boolean
+  users       User[]
+  permissions Permission[]
+}
+
+model Permission {
+  id    Int    @id @default(autoincrement())
+  name  String
+  roles Role[]
+}
+
+model Wish_List {
+  id       Int       @id @default(autoincrement())
+  User     User      @relation(fields: [id_user], references: [id])
+  id_user  Int       @unique
+  products Product[]
+}
+
+model Cart {
+  id       Int       @id @default(autoincrement())
+  units    Int
+  usuario  User      @relation(fields: [id_user], references: [id])
+  id_user  Int       @unique
+  products Product[]
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String
+  offer       Int
+  url_img     String
+  //external_reference ???
+  unit_price  Decimal
+  is_deleted  Boolean
+  cart        Cart[]
+  categories  Category[]
+  wish_list   Wish_List[]
+  order       Order[]
+  stock       Stock?
+}
+
+model Stock {
+  id         Int     @id @default(autoincrement())
+  count      Int
+  product    Product @relation(fields: [id_product], references: [id])
+  id_product Int     @unique
+}
+
+model Category {
+  id                 Int        @id @default(autoincrement())
+  name               String
+  url_img            String
+  products           Product[]
+  id_category_parent Int?
+  is_deleted         Boolean
+  parent             Category?  @relation("CategoryToParent", fields: [id_category_parent], references: [id])
+  children           Category[] @relation("CategoryToParent")
+}
+
+model Reset_token {
+  id         Int      @id @default(autoincrement())
+  token      String
+  created_at DateTime
+  used       Boolean
+  usuario    User     @relation(fields: [id_user], references: [id])
+  id_user    Int      @unique
+}
+
+model Shipping_Address {
+  id             Int    @id @default(autoincrement())
+  usuario        User   @relation(fields: [id_user], references: [id])
+  id_user        Int    @unique
+  address_line_1 String
+  address_line_2 String
+  city           String
+  postal_code    String
+  country        String
+  order          Order?
+}
+
+model Shipment {
+  id              Int               @id @default(autoincrement())
+  tracking_number String
+  status          String
+  shipped_at      DateTime          @default(now())
+  delivered_at    DateTime
+  order           Order             @relation(fields: [id_order], references: [id])
+  id_order        Int               @unique
+  shipment_method Shipping_Method[]
+}
+
+model Shipping_Method {
+  id                     Int        @id @default(autoincrement())
+  name                   String
+  provider               String
+  stimated_delivery_time Int
+  cost                   Decimal
+  is_deleted             Boolean
+  shipment               Shipment[]
+}
+
+model Order {
+  id                 Int              @id @default(autoincrement())
+  //external_reference ???
+  shipping_Adress    Shipping_Address @relation(fields: [id_shipping_addres], references: [id])
+  id_shipping_addres Int              @unique
+  product            Product[]
+  shipment           Shipment?
+  detail             Detail           @relation(fields: [id_detail], references: [id])
+  id_detail          Int              @unique
+}
+
+model Detail {
+  id                  Int      @id @default(autoincrement())
+  date_created        DateTime @default(now())
+  date_approved       DateTime
+  date_last_update    DateTime
+  //External_Reference??
+  operation_type      String
+  transaction_ammount Decimal
+  payment_status      String
+  payment_method      String
+  description         String
+  order               Order?
+}
