@@ -3,8 +3,8 @@ import {
   deleteRol,
   listRoles,
   searchRoleById,
-  updateRol,
-} from "../services/rolesServices";
+  updateRole,
+} from "../services/rolesServices.js";
 
 export const rolesCreate = async (req, res) => {
   try {
@@ -45,7 +45,7 @@ export const roleUpdate = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { data } = req.body;
-    const result = await updateRol({ id, data });
+    const result = await updateRole({ id, data });
     res.status(200).json({ message: "Rol actualizado", rol: result });
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message });
