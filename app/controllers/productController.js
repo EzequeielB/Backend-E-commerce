@@ -8,18 +8,16 @@ import {
 
 export const productsCreate = async (req, res) => {
   try {
-    const { name, description, offer, url_img, unit_price } = req.body;
+    const { name, description, url_img  } = req.body;
 
-    if (!name || !description || offer === undefined || !url_img || unit_price === undefined) {
+    if (!name || !description || !url_img) {
       return res.status(400).json({ error: "Faltan campos requeridos" });
     }
 
     const result = await createProduct({
       name,
       description,
-      offer: Number(offer),
       url_img,
-      unit_price,
     });
 
     res.status(201).json({
@@ -83,3 +81,19 @@ export const productDelete = async (req, res) => {
     res.status(err.status || 500).json({ error: err.message });
   }
 };
+
+
+/*
+model Product {
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String
+  url_img        String
+  is_deleted     Boolean
+  cart           Cart[]
+  categories     Category[]
+  wish_list      Wish_List[]
+  uniqueProducts Unique_Product[]
+}
+
+*/
