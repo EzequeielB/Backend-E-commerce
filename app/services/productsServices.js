@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export const createProduct = async ({
   name,
   description,
-  url_img,
+  url_img
 }) => {
   const product = await prisma.product.create({
     data: {

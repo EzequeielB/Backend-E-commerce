@@ -4,7 +4,7 @@ import {
   searchProductById,
   updateProduct,
   deleteProduct,
-} from "../services/productsServices";
+} from "../services/productsServices.js";
 
 export const productsCreate = async (req, res) => {
   try {

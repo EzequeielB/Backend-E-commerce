@@ -66,6 +66,7 @@ CREATE TABLE `Unique_Product` (
     `offer` DECIMAL(65, 30) NOT NULL,
     `unit_price` DECIMAL(65, 30) NOT NULL DEFAULT 0,
     `color` VARCHAR(191) NOT NULL,
+    `is_deleted` BOOLEAN NOT NULL,
     `id_size` INTEGER NULL,
     `id_brand` INTEGER NULL,
     `id_product` INTEGER NULL,
