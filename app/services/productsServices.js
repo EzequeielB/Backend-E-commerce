@@ -5,17 +5,13 @@ const prisma = new PrismaClient();
 export const createProduct = async ({
   name,
   description,
-  offer,
-  url_img,
-  unit_price,
+  url_img
 }) => {
   const product = await prisma.product.create({
     data: {
       name,
       description,
-      offer,
       url_img,
-      unit_price,
       is_deleted: false,
     },
   });

@@ -75,6 +75,7 @@ model Unique_Product {
   offer      Decimal
   unit_price Decimal  @default(0)
   color      String
+  is_deleted Boolean
   id_size    Int?
   size       Size?    @relation(fields: [id_size], references: [id])
   id_brand   Int?
