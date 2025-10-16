@@ -22,7 +22,7 @@ export const rolesCreate = async (req, res) => {
 export const rolById = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const result = await searchRoleById({ id });
+    const result = await searchRoleById(id);
     res.status(200).json({ message: "Rol encontrado", rol: result });
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message });
@@ -55,7 +55,7 @@ export const roleUpdate = async (req, res) => {
 export const rolDelete = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const result = await deleteRol({ id });
+    const result = await deleteRol(id);
     res.status(200).json({ message: "Usuario eliminado", Rol: result });
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message });

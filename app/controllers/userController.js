@@ -48,7 +48,7 @@ export const listUsers = async (req, res) => {
 export const userById = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const result = await searchById({ id });
+    const result = await searchById( id );
     res.status(200).json({ message: "Usuario encontrado", user: result });
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message });
@@ -69,7 +69,7 @@ export const userUpdate = async (req, res) => {
 export const userDelete = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const result = await del({ id });
+    const result = await del( id );
     res.status(200).json({ message: "Usuario eliminado", user: result });
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message });
