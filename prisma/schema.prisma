@@ -21,8 +21,8 @@ model User {
   password         String
   CreadoEn         DateTime          @default(now()) @map("created_at")
   carrito          Cart?
-  role             Role?             @relation(fields: [roleId], references: [id])
-  roleId           Int
+  id_role          Int?
+  role             Role?             @relation(fields: [id_role], references: [id])
   wish_list        Wish_List?
   reset_token      Reset_token?
   shipping_Address Shipping_Address?
@@ -44,16 +44,16 @@ model Permission {
 
 model Wish_List {
   id       Int       @id @default(autoincrement())
-  User     User      @relation(fields: [id_user], references: [id])
-  id_user  Int       @unique
+  id_user  Int?      @unique
+  User     User?     @relation(fields: [id_user], references: [id])
   products Product[]
 }
 
 model Cart {
   id       Int       @id @default(autoincrement())
   units    Int
-  usuario  User      @relation(fields: [id_user], references: [id])
-  id_user  Int       @unique
+  id_user  Int?      @unique
+  usuario  User?     @relation(fields: [id_user], references: [id])
   products Product[]
 }
 
@@ -63,7 +63,6 @@ model Product {
   description String
   offer       Decimal
   url_img     String
-  //external_reference ???
   unit_price  Decimal
   is_deleted  Boolean
   cart        Cart[]
@@ -75,10 +74,11 @@ model Unique_Product {
   id       Int     @id @default(autoincrement())
   name     String
   color    String
+  id_size  Int?    @unique
   size     Size?   @relation(fields: [id_size], references: [id])
-  id_size  Int     @unique
+  id_brand Int?    @unique
   brand    Brand?  @relation(fields: [id_brand], references: [id])
-  id_brand Int     @unique
+  //external_reference ???
   order    Order[]
   stock    Stock?
 }
@@ -97,10 +97,10 @@ model Brand {
 }
 
 model Stock {
-  id                Int            @id @default(autoincrement())
+  id                Int             @id @default(autoincrement())
   count             Int
-  product           Unique_Product @relation(fields: [id_unique_product], references: [id])
-  id_unique_product Int            @unique
+  id_unique_product Int?            @unique
+  product           Unique_Product? @relation(fields: [id_unique_product], references: [id])
 }
 
 model Category {
@@ -108,8 +108,8 @@ model Category {
   name               String
   url_img            String
   products           Product[]
-  id_category_parent Int?
   is_deleted         Boolean
+  id_category_parent Int?
   parent             Category?  @relation("CategoryToParent", fields: [id_category_parent], references: [id])
   children           Category[] @relation("CategoryToParent")
 }
@@ -119,14 +119,14 @@ model Reset_token {
   token      String
   created_at DateTime
   used       Boolean
-  usuario    User     @relation(fields: [id_user], references: [id])
-  id_user    Int      @unique
+  id_user    Int?     @unique
+  usuario    User?    @relation(fields: [id_user], references: [id])
 }
 
 model Shipping_Address {
   id             Int    @id @default(autoincrement())
-  usuario        User   @relation(fields: [id_user], references: [id])
-  id_user        Int    @unique
+  id_user        Int?   @unique
+  usuario        User?  @relation(fields: [id_user], references: [id])
   address_line_1 String
   address_line_2 String
   city           String
@@ -141,8 +141,8 @@ model Shipment {
   status          String
   shipped_at      DateTime          @default(now())
   delivered_at    DateTime
-  order           Order             @relation(fields: [id_order], references: [id])
-  id_order        Int               @unique
+  id_order        Int?              @unique
+  order           Order?            @relation(fields: [id_order], references: [id])
   shipment_method Shipping_Method[]
 }
 
@@ -157,14 +157,14 @@ model Shipping_Method {
 }
 
 model Order {
-  id                 Int              @id @default(autoincrement())
-  external_reference String
-  shipping_Adress    Shipping_Address @relation(fields: [id_shipping_addres], references: [id])
-  id_shipping_addres Int              @unique
+  id                 Int               @id @default(autoincrement())
+  //external_reference String
+  id_shipping_addres Int?              @unique
+  shipping_Adress    Shipping_Address? @relation(fields: [id_shipping_addres], references: [id])
   unique_product     Unique_Product[]
   shipment           Shipment?
-  detail             Detail           @relation(fields: [id_detail], references: [id])
-  id_detail          Int              @unique
+  id_detail          Int?              @unique
+  detail             Detail?           @relation(fields: [id_detail], references: [id])
 }
 
 model Detail {
