@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { uniqueProductById, uniqueProductDelete, uniqueProductsCreate, uniqueProductsList, uniqueProductUpdate } from "../controllers/uniqueProductController";
+import { uniqueProductById, uniqueProductDelete, uniqueProductsCreate, uniqueProductsList, uniqueProductUpdate } from "../controllers/uniqueProductController.js";
 
 
 const UniqueProductRoutes = Router();
