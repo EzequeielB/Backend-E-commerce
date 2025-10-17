@@ -89,6 +89,7 @@ model Unique_Product {
 model Size {
   id             Int              @id @default(autoincrement())
   size           String
+  is_deleted     Boolean
   unique_product Unique_Product[]
 }
 
@@ -96,6 +97,7 @@ model Brand {
   id                 Int              @id @default(autoincrement())
   name               String
   external_reference String
+  is_deleted         Boolean
   unique_product     Unique_Product[]
 }
 
