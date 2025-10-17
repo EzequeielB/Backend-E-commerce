@@ -97,7 +97,7 @@ model Brand {
   id                 Int              @id @default(autoincrement())
   name               String
   external_reference String
-  fis_deleted         Boolean
+  is_deleted         Boolean
   unique_product     Unique_Product[]
 }
 

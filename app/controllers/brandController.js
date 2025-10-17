@@ -1,17 +1,17 @@
-import { createBrand, deleteBrand, listBrands, searchBrandById, updateBrand } from "../services/brandServices";
+import { createBrand, deleteBrand, listBrands, searchBrandById, updateBrand } from "../services/brandServices.js";
 
 
 export const brandsCreate = async (req, res) => {
   try {
-    const { name, external_link  } = req.body;
+    const { name, external_reference  } = req.body;
 
-    if (!name || !external_link) {
+    if (!name || !external_reference) {
       return res.status(400).json({ error: "Faltan campos requeridos" });
     }
 
     const result = await createBrand({
       name,
-      external_link
+      external_reference
     });
 
     res.status(201).json({
