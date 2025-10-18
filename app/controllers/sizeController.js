@@ -1,4 +1,4 @@
-import { createSize, deleteSize, listSizes, searchSizeById, updateSize } from "../services/sizeServices";
+import { createSize, deleteSize, listSizes, searchSizeById, updateSize } from "../services/sizeServices.js";
 
 
 export const sizesCreate = async (req, res) => {
