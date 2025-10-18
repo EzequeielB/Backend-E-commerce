@@ -2,7 +2,7 @@ import { PrismaClient } from "../generated/prisma/index.js";
 
 const prisma = new PrismaClient();
 
-export const createstock = async ({ count }) => {
+export const createStock = async ({ count }) => {
   const stock = await prisma.stock.create({
     data: {
       count,
@@ -24,7 +24,7 @@ export const searchStockById = async (id) => {
   return foundStock;
 };
 
-export const deletestock = async (id) => {
+export const deleteStock = async (id) => {
   const foundStock = await prisma.stock.findUnique({ where: { id } });
   if (!foundStock) {
     const err = new Error("No existe stock con ese ID");
