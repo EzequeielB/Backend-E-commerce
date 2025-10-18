@@ -24,7 +24,7 @@ export const searchCartById = async (id) => {
   return foundCart;
 };
 
-export const del = async (id) => {
+export const deleteCart = async (id) => {
   const foundCart = await prisma.cart.findUnique({ where: { id } });
   if (!foundCart) {
     const err = new Error("No existe carrito con ese ID");
