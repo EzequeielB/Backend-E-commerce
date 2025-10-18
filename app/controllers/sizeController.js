@@ -3,14 +3,14 @@ import { createSize, deleteSize, listSizes, searchSizeById, updateSize } from ".
 
 export const sizesCreate = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { size } = req.body;
 
-    if (!name || !external_reference) {
+    if (!size) {
       return res.status(400).json({ error: "Faltan campos requeridos" });
     }
 
     const result = await createSize({
-      name
+      size
     });
 
     res.status(201).json({
