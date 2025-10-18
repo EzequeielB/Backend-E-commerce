@@ -6,18 +6,18 @@ export const stocksCreate = async (req, res) => {
     const result = await createStock({ name });
     res.status(201).json({
       message: "Stock creado correctamente",
-      rol: result,
+      stock: result,
     });
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message });
   }
 };
 
-export const rolById = async (req, res) => {
+export const stockById = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const result = await searchStockById(id);
-    res.status(200).json({ message: "Stock encontrado", rol: result });
+    res.status(200).json({ message: "Stock encontrado", stock: result });
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message });
   }
@@ -40,13 +40,13 @@ export const stockUpdate = async (req, res) => {
     const id = Number(req.params.id);
     const { data } = req.body;
     const result = await updateStock({ id, data });
-    res.status(200).json({ message: "Stock actualizado", rol: result });
+    res.status(200).json({ message: "Stock actualizado", stock: result });
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message });
   }
 };
 
-export const rolDelete = async (req, res) => {
+export const stockDelete = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const result = await deleteStock(id);
