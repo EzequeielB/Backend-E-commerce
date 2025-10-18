@@ -4,6 +4,7 @@ import rolesRoutes from "./rolesRoutes.js";
 import productRoutes from "./productRoutes.js";
 import UniqueProductRoutes from "./uniqueProductRoutes.js";
 import brandRoutes from "./brandRoutes.js";
+import sizeRoutes from "./sizeRoutes.js";
 
 const routes_init = () => {
   const router = Router();
@@ -12,6 +13,7 @@ const routes_init = () => {
   router.use("/products", productRoutes);
   router.use("/unique-product", UniqueProductRoutes);
   router.use("/brands", brandRoutes);
+  router.use("/sizes", sizeRoutes);
   return router;
 };
 
