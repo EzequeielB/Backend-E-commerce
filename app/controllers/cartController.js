@@ -10,9 +10,7 @@ export const cartsCreate = async (req, res) => {
         .json({ error: "Body inválido para actualización" });
     }
 
-    const result = await createCart({
-      data,
-    });
+    const result = await createCart(data);
 
     res.status(201).json({
       message: "Carto creado correctamente",
