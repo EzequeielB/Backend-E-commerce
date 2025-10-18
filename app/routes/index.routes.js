@@ -12,8 +12,7 @@ const routes_init = () => {
   router.use("/users", userRoutes);
   router.use("/roles", rolesRoutes);
   router.use("/products", productRoutes);
-  router.use("/unique-product", UniqueProductRoutes);
-  router.use("/brands", brandRoutes);
+  router.use("/unique-product", UniqueProductRoutes);  router.use("/brands", brandRoutes);
   router.use("/sizes", sizeRoutes);
   router.use("/stocks", stockRoutes);
   return router;

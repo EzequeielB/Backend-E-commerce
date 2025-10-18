@@ -1,9 +1,9 @@
-import { createStock, deleteStock, listStocks, searchStockById, updateStock } from "../services/stockServices";
+import { createStock, deleteStock, listStocks, searchStockById, updateStock } from "../services/stockServices.js";
 
 export const stocksCreate = async (req, res) => {
   try {
-    const { name } = req.body;
-    const result = await createStock({ name });
+    const { count } = req.body;
+    const result = await createStock({ count });
     res.status(201).json({
       message: "Stock creado correctamente",
       stock: result,

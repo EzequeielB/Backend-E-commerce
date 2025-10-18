@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { stockById, stockDelete, stocksCreate, stocksList, stockUpdate } from "../controllers/stockController";
+import { stockById, stockDelete, stocksCreate, stocksList, stockUpdate } from "../controllers/stockController.js";
 
 const stockRoutes = Router();
 
