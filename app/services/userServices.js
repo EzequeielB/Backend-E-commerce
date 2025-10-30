@@ -25,6 +25,10 @@ export const register = async ({ user_name, email, password }) => {
       user_name,
       email,
       password: hashedPassword,
+      id_role: 2,
+    },
+    include: {
+      role: true,
     },
   });
 
@@ -42,7 +46,7 @@ export const login = async ({ user_name, password }) => {
     throw err;
   }
 
-  const token = jwt.sign({ id: user.id, username: user.user_name }, SECRET, {
+  const token = jwt.sign({ id: user.id, username: user.user_name, rol:user.id_role }, SECRET, {
     expiresIn: "1h",
   });
 
@@ -52,7 +56,10 @@ export const login = async ({ user_name, password }) => {
 };
 
 export const searchById = async (id) => {
-  const foundUser = await prisma.user.findUnique({ where: { id } });
+  const foundUser = await prisma.user.findUnique({ 
+    where: { id },
+    include:{role:true}   
+  });
   if (!foundUser) {
     const err = new Error("No existe usuario con ese ID");
     err.status = 404;
@@ -61,7 +68,12 @@ export const searchById = async (id) => {
   return foundUser;
 };
 
-export const list = async () => prisma.user.findMany();
+export const list = async () =>
+  prisma.user.findMany({
+    include: {
+      role: true,
+    },
+  });
 
 export const del = async (id) => {
   const foundUser = await prisma.user.findUnique({ where: { id } });

@@ -6,6 +6,7 @@ export const createRol = async ({ name }) => {
   const role = await prisma.role.create({
     data: {
       name,
+      is_Deleted: false,
     },
   });
 
