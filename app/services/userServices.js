@@ -9,17 +9,29 @@ export const register = async ({ user_name, email, password }) => {
   const usedData = await prisma.user.findFirst({
     where: { OR: [{ user_name }, { email }] },
   });
+
   if (usedData) {
     const err = new Error("El usuario o email ya están registrados");
     err.status = 409;
     throw err;
   }
+
   const hashedPassword = await bcrypt.hash(password, 10);
-  return await prisma.user.create({
-    data: { user_name, email, password: hashedPassword, id_role: 2 },
-    include: { role: true },
+
+  await prisma.user.create({
+    data: {
+      user_name,
+      email,
+      password: hashedPassword,
+      roles: {
+        create: [{ role: { connect: { id: 2 } } }],
+      },
+    },
   });
+
+  return { success: true };
 };
+
 
 export const createUser = async ({
   user_name,

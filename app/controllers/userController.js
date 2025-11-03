@@ -8,7 +8,7 @@ import {
   update,
 } from "../services/userServices.js";
 
-export const createUserController = async (req, res, next) => {
+export const createUsers = async (req, res, next) => {
   try {
     const { user_name, email, password, extraRoles } = req.body;
 
@@ -32,14 +32,23 @@ export const createUserController = async (req, res, next) => {
 export const userRegister = async (req, res, next) => {
   try {
     const { user_name, email, password, extraRoles } = req.body;
-    await register({ user_name, email, password, extraRoles });
+
+    await register({
+      user_name,
+      email,
+      password,
+      extraRoles: Array.isArray(extraRoles) ? extraRoles : [],
+    });
+
     res.status(201).json({
       message: "Usuario registrado correctamente",
+      success: true,
     });
   } catch (err) {
     next(err);
   }
 };
+
 
 export const userLogin = async (req, res, next) => {
   try {
