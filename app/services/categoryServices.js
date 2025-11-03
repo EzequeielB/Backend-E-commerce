@@ -4,19 +4,24 @@ const prisma = new PrismaClient();
 
 export const createCategory = async ({data}) => {
   const category = await prisma.category.create({
-    data
+    data:{
+        ...data,
+        is_deleted: false,
+    }
   });
   return category;
 };
 
 export const listCategorys = async () => {
-  return prisma.category.findMany();
+  return prisma.category.findMany({
+    where: { is_deleted: false },
+  });
 };
 
 export const searchCategoryById = async (id) => {
   const foundCategory = await prisma.category.findUnique({ where: { id } });
   if (!foundCategory) {
-    const err = new Error("No existe carro con ese ID");
+    const err = new Error("No existe categoria con ese ID");
     err.status = 404;
     throw err;
   }
@@ -26,17 +31,22 @@ export const searchCategoryById = async (id) => {
 export const deleteCategory = async (id) => {
   const foundCategory = await prisma.category.findUnique({ where: { id } });
   if (!foundCategory) {
-    const err = new Error("No existe carrito con ese ID");
+    const err = new Error("No existe categoria con ese ID");
     err.status = 404;
     throw err;
   }
-  return prisma.category.delete({ where: { id } });
+
+  return prisma.category.update({
+    where: { id },
+    data: { is_deleted: true },
+  });
 };
+
 
 export const updateCategory = async ({ id, data }) => {
   const foundCategory = await prisma.category.findUnique({ where: { id } });
   if (!foundCategory) {
-    const err = new Error("No existe carro con ese ID");
+    const err = new Error("No existe categoria con ese ID");
     err.status = 404;
     throw err;
   }
