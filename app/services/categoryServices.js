@@ -1,0 +1,48 @@
+import { PrismaClient } from "../generated/prisma/index.js";
+
+const prisma = new PrismaClient();
+
+export const createCategory = async ({data}) => {
+  const category = await prisma.category.create({
+    data
+  });
+  return category;
+};
+
+export const listCategorys = async () => {
+  return prisma.category.findMany();
+};
+
+export const searchCategoryById = async (id) => {
+  const foundCategory = await prisma.category.findUnique({ where: { id } });
+  if (!foundCategory) {
+    const err = new Error("No existe carro con ese ID");
+    err.status = 404;
+    throw err;
+  }
+  return foundCategory;
+};
+
+export const deleteCategory = async (id) => {
+  const foundCategory = await prisma.category.findUnique({ where: { id } });
+  if (!foundCategory) {
+    const err = new Error("No existe carrito con ese ID");
+    err.status = 404;
+    throw err;
+  }
+  return prisma.category.delete({ where: { id } });
+};
+
+export const updateCategory = async ({ id, data }) => {
+  const foundCategory = await prisma.category.findUnique({ where: { id } });
+  if (!foundCategory) {
+    const err = new Error("No existe carro con ese ID");
+    err.status = 404;
+    throw err;
+  }
+
+  return prisma.category.update({
+    where: { id },
+    data,
+  });
+};
