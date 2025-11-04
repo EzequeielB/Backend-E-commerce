@@ -13,7 +13,10 @@ export const authMiddleware = (rolesPermitidos = []) => {
       const decoded = jwt.verify(token, SECRET);
       req.user = decoded;
 
-      if (rolesPermitidos.length && !rolesPermitidos.includes(decoded.rol)) {
+      if (
+        rolesPermitidos.length &&
+        !decoded.roles.some((roleId) => rolesPermitidos.includes(roleId))
+      ) {
         return res.status(403).json({ error: "Acceso denegado" });
       }
 

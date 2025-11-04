@@ -16,8 +16,9 @@ app.use(
 
 app.use("/api", routes_init());
 
-app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+
+app.use(errorHandler);
