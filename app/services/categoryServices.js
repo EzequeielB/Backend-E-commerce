@@ -2,14 +2,14 @@ import { PrismaClient } from "../generated/prisma/index.js";
 
 const prisma = new PrismaClient();
 
-export const createCategory = async ({data}) => {
-  const category = await prisma.category.create({
-    data:{
-        ...data,
-        is_deleted: false,
-    }
+export const createCategory = async (data) => {
+  return prisma.category.create({
+    data: {
+      ...data,
+      is_deleted: false,
+      url_img: "/https",
+    },
   });
-  return category;
 };
 
 export const listCategorys = async () => {
@@ -41,7 +41,6 @@ export const deleteCategory = async (id) => {
     data: { is_deleted: true },
   });
 };
-
 
 export const updateCategory = async ({ id, data }) => {
   const foundCategory = await prisma.category.findUnique({ where: { id } });
