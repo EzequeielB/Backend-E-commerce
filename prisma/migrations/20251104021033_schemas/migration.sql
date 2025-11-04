@@ -114,7 +114,6 @@ CREATE TABLE `Stock` (
 CREATE TABLE `Category` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `url_img` VARCHAR(191) NOT NULL,
     `is_deleted` BOOLEAN NOT NULL,
     `id_category_parent` INTEGER NULL,
 

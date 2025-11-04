@@ -7,7 +7,6 @@ export const createCategory = async (data) => {
     data: {
       ...data,
       is_deleted: false,
-      url_img: "/https",
     },
   });
 };
