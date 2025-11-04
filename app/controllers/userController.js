@@ -1,4 +1,5 @@
 import {
+  createUser,
   del,
   list,
   login,
@@ -7,20 +8,49 @@ import {
   update,
 } from "../services/userServices.js";
 
-export const userRegister = async (req, res) => {
+export const createUsers = async (req, res, next) => {
   try {
-    const { user_name, email, password } = req.body;
-    const result = await register({ user_name, email, password });
+    const { user_name, email, password, extraRoles } = req.body;
+
+    const user = await createUser({
+      user_name,
+      email,
+      password,
+      extraRoles: Array.isArray(extraRoles) ? extraRoles : [],
+    });
+
     res.status(201).json({
-      message: "Usuario registrado correctamente",
-      user: result,
+      message: "Usuario creado correctamente",
+      user,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const userLogin = async (req, res) => {
+
+export const userRegister = async (req, res, next) => {
+  try {
+    const { user_name, email, password, extraRoles } = req.body;
+
+    await register({
+      user_name,
+      email,
+      password,
+      extraRoles: Array.isArray(extraRoles) ? extraRoles : [],
+    });
+
+    res.status(201).json({
+      message: "Usuario registrado correctamente",
+      success: true,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+export const userLogin = async (req, res, next) => {
   try {
     const { user_name, password } = req.body;
     const result = await login({ user_name, password });
@@ -29,11 +59,11 @@ export const userLogin = async (req, res) => {
       ...result,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const listUsers = async (req, res) => {
+export const listUsers = async (req, res, next) => {
   try {
     const result = await list();
     res.status(200).json({
@@ -41,37 +71,37 @@ export const listUsers = async (req, res) => {
       users: result,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const userById = async (req, res) => {
+export const userById = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
-    const result = await searchById( id );
+    const result = await searchById(id);
     res.status(200).json({ message: "Usuario encontrado", user: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const userUpdate = async (req, res) => {
+export const userUpdate = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const { data } = req.body;
     const result = await update({ id, data });
     res.status(200).json({ message: "Usuario actualizado", user: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const userDelete = async (req, res) => {
+export const userDelete = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
-    const result = await del( id );
+    const result = await del(id);
     res.status(200).json({ message: "Usuario eliminado", user: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };

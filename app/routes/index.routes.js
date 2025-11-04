@@ -7,6 +7,7 @@ import brandRoutes from "./brandRoutes.js";
 import sizeRoutes from "./sizeRoutes.js";
 import stockRoutes from "./stockRoutes.js";
 import cartRoutes from "./cartRoutes.js";
+import categoryRoutes from "./category.js";
 
 const routes_init = () => {
   const router = Router();
@@ -17,6 +18,7 @@ const routes_init = () => {
   router.use("/sizes", sizeRoutes);
   router.use("/stocks", stockRoutes);
   router.use("/carts", cartRoutes);
+  router.use("/categories", categoryRoutes)
   return router;
 };
 

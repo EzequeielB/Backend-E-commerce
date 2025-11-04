@@ -20,9 +20,8 @@ model User {
   email            String            @unique
   password         String
   CreadoEn         DateTime          @default(now()) @map("created_at")
-  carrito          Cart?
-  id_role          Int?
-  role             Role?             @relation(fields: [id_role], references: [id])
+  cart             Cart?
+  roles            UserRole[]
   wish_list        Wish_List?
   reset_token      Reset_token?
   shipping_Address Shipping_Address?
@@ -32,8 +31,18 @@ model Role {
   id          Int          @id @default(autoincrement())
   name        String
   is_Deleted  Boolean
-  users       User[]
+  users       UserRole[]
   permissions Permission[]
+}
+
+model UserRole {
+  userId Int
+  roleId Int
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
 }
 
 model Permission {
@@ -111,7 +120,6 @@ model Stock {
 model Category {
   id                 Int        @id @default(autoincrement())
   name               String
-  url_img            String
   products           Product[]
   is_deleted         Boolean
   id_category_parent Int?

@@ -1,5 +1,7 @@
 import { Router } from "express";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 import {
+  createUsers,
   listUsers,
   userById,
   userDelete,
@@ -12,6 +14,9 @@ const userRoutes = Router();
 
 userRoutes.post("/register", userRegister),
 userRoutes.post("/login", userLogin);
+
+userRoutes.use(authMiddleware([1]));
+userRoutes.post("/create", createUsers)
 userRoutes.get("/list", listUsers);
 userRoutes.get("/:id", userById);
 userRoutes.delete("/delete/:id", userDelete);
