@@ -1,88 +1,54 @@
 import { createBrand, deleteBrand, listBrands, searchBrandById, updateBrand } from "../services/brandServices.js";
 
-
-export const brandsCreate = async (req, res) => {
+export const brandsCreate = async (req, res, next) => {
   try {
-    const { name, external_reference  } = req.body;
 
-    if (!name || !external_reference) {
-      return res.status(400).json({ error: "Faltan campos requeridos" });
-    }
-
-    const result = await createBrand({
-      name,
-      external_reference
-    });
-
+    const result = await createBrand(req.body);
+    
     res.status(201).json({
       message: "Marca creada correctamente",
       brand: result,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err)
   }
 };
 
-export const brandById = async (req, res) => {
+export const brandById = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
-
-    const result = await searchBrandById(id);
-    res.status(200).json({ message: "Marca encontrado", brnad: result });
+    const result = await searchBrandById(req.id);
+    res.status(200).json({ message: "Marca encontrada", brnad: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err)
   }
 };
 
-export const brandsList = async (req, res) => {
+export const brandsList = async (req, res, next) => {
   try {
     const result = await listBrands();
     res.status(200).json({
-      message: "Marcas encontrados",
+      message: "Marcas encontradas",
       brands: result,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err)
   }
 };
 
-export const brandUpdate = async (req, res) => {
+export const brandUpdate = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
-
-    const data = req.body;
-    if (!data || typeof data !== "object") {
-      return res.status(400).json({ error: "Body inválido para actualización" });
-    }
-
-    const result = await updateBrand({ id, data });
+    const result = await updateBrand({ id:req.id, data:req.body });
     res.status(200).json({ message: "Marca actualizada", brand: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err)
   }
 };
 
-export const brandDelete = async (req, res) => {
+export const brandDelete = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
-
-    const result = await deleteBrand(id);
+    const result = await deleteBrand(req.id);
     res.status(200).json({ message: "Marca eliminada", brand: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err)
   }
 };
-
-
-/*
-model Brand {
-  id                 Int              @id @default(autoincrement())
-  name               String
-  external_reference String
-  fis_deleted         Boolean
-  unique_product     Unique_Product[]
-}
-*/

@@ -2,24 +2,18 @@ import { PrismaClient } from "../generated/prisma/index.js";
 
 const prisma = new PrismaClient();
 
-export const createBrand = async ({
-  name,
-  external_reference
-}) => {
-  const brand = await prisma.brand.create({
+export const createBrand = async (data) => {
+  return prisma.brand.create({
     data: {
-      name,
-      external_reference,
+      ...data,
       is_deleted: false,
     },
   });
-
-  return brand;
 };
 
 export const listBrands = async () => {
   return prisma.brand.findMany({
-    where: { is_deleted: false }
+    where: { is_deleted: false },
   });
 };
 

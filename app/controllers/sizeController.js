@@ -8,9 +8,8 @@ import {
 
 export const sizesCreate = async (req, res, next) => {
   try {
-    const data = req.body;
 
-    const result = await createSize(data);
+    const result = await createSize(req.body);
 
     res.status(201).json({
       message: "talle creado correctamente",
@@ -23,8 +22,8 @@ export const sizesCreate = async (req, res, next) => {
 
 export const sizeById = async (req, res, next) => {
   try {
-    const result = await searchSizeById(id);
-    res.status(200).json({ message: "talle encontrado", brnad: result });
+    const result = await searchSizeById(req.id);
+    res.status(200).json({ message: "talle encontrado", size: result });
   } catch (err) {
     next(err);
   }
