@@ -2,18 +2,15 @@ import { PrismaClient } from "../generated/prisma/index.js";
 
 const prisma = new PrismaClient();
 
-export const createSize = async ({
-  size,
-}) => {
-  const Size = await prisma.size.create({
+export const createSize = async (data) => {
+  return prisma.size.create({
     data: {
-      size,
+      ...data,
       is_deleted: false,
     },
   });
-
-  return Size;
 };
+
 
 export const listSizes = async () => {
   return prisma.size.findMany({
@@ -38,7 +35,7 @@ export const deleteSize = async (id) => {
     err.status = 404;
     throw err;
   }
-
+  
   return prisma.size.update({
     where: { id },
     data: { is_deleted: true },
@@ -52,7 +49,7 @@ export const updateSize = async ({ id, data }) => {
     err.status = 404;
     throw err;
   }
-
+  
   return prisma.size.update({
     where: { id },
     data,
