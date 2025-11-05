@@ -60,8 +60,16 @@ CREATE TABLE `Product` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NOT NULL,
-    `url_img` VARCHAR(191) NOT NULL,
     `is_deleted` BOOLEAN NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ProductImage` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `url` VARCHAR(191) NOT NULL,
+    `productId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -74,7 +82,6 @@ CREATE TABLE `Unique_Product` (
     `unit_price` DECIMAL(65, 30) NOT NULL DEFAULT 0,
     `color` VARCHAR(191) NOT NULL,
     `is_deleted` BOOLEAN NOT NULL,
-    `id_size` INTEGER NULL,
     `id_brand` INTEGER NULL,
     `id_product` INTEGER NULL,
 
@@ -114,7 +121,6 @@ CREATE TABLE `Stock` (
 CREATE TABLE `Category` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `url_img` VARCHAR(191) NOT NULL,
     `is_deleted` BOOLEAN NOT NULL,
     `id_category_parent` INTEGER NULL,
 
@@ -227,6 +233,15 @@ CREATE TABLE `_ProductToWish_List` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `_SizeToUnique_Product` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
+
+    UNIQUE INDEX `_SizeToUnique_Product_AB_unique`(`A`, `B`),
+    INDEX `_SizeToUnique_Product_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `_CategoryToProduct` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
@@ -266,7 +281,7 @@ ALTER TABLE `Wish_List` ADD CONSTRAINT `Wish_List_id_user_fkey` FOREIGN KEY (`id
 ALTER TABLE `Cart` ADD CONSTRAINT `Cart_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Unique_Product` ADD CONSTRAINT `Unique_Product_id_size_fkey` FOREIGN KEY (`id_size`) REFERENCES `Size`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `ProductImage` ADD CONSTRAINT `ProductImage_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Unique_Product` ADD CONSTRAINT `Unique_Product_id_brand_fkey` FOREIGN KEY (`id_brand`) REFERENCES `Brand`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -312,6 +327,12 @@ ALTER TABLE `_ProductToWish_List` ADD CONSTRAINT `_ProductToWish_List_A_fkey` FO
 
 -- AddForeignKey
 ALTER TABLE `_ProductToWish_List` ADD CONSTRAINT `_ProductToWish_List_B_fkey` FOREIGN KEY (`B`) REFERENCES `Wish_List`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_SizeToUnique_Product` ADD CONSTRAINT `_SizeToUnique_Product_A_fkey` FOREIGN KEY (`A`) REFERENCES `Size`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_SizeToUnique_Product` ADD CONSTRAINT `_SizeToUnique_Product_B_fkey` FOREIGN KEY (`B`) REFERENCES `Unique_Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_CategoryToProduct` ADD CONSTRAINT `_CategoryToProduct_A_fkey` FOREIGN KEY (`A`) REFERENCES `Category`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

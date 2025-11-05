@@ -2,44 +2,74 @@ import { PrismaClient } from "../generated/prisma/index.js";
 
 const prisma = new PrismaClient();
 
-export const createUniqueProduct = async ({
-  name,
-  offer,
-  unit_price,
-  color,
-}) => {
+export const createUniqueProduct = async (data) => {
+  const { id_brand, id_product, size, stock, ...rest } = data;
+
   const product = await prisma.unique_Product.create({
     data: {
-      name,
-      offer: new prisma.Decimal(offer),
-      unit_price: new prisma.Decimal(unit_price),
-      color,
-      is_deleted: false,
+      ...rest,
+      is_deleted: rest.is_deleted ?? false,
+      brand: id_brand ? { connect: { id: id_brand } } : undefined,
+      product: id_product ? { connect: { id: id_product } } : undefined,
+      size: size?.length ? { connect: size } : undefined,
+      stock: stock
+        ? {
+            create: {
+              count: stock.count,
+            },
+          }
+        : undefined,
+    },
+    include: {
+      brand: true,
+      product: true,
+      size: true,
+      stock: true,
     },
   });
 
   return product;
 };
 
+
 export const listUniqueProducts = async () => {
   return prisma.unique_Product.findMany({
-    where: { is_deleted: false }
+    where: { is_deleted: false },
+    include: {
+      brand: true,
+      product: true,
+      size: true,
+      stock: true,
+    },
   });
 };
 
+
 export const searchUniqueProductById = async (id) => {
-  const foundProduct = await prisma.unique_Product.findUnique({ where: { id } });
-  if (!foundProduct) {
+  const foundProduct = await prisma.unique_Product.findUnique({
+    where: { id },
+    include: {
+      brand: true,
+      product: true,
+      size: true,
+      stock: true,
+    },
+  });
+
+  if (!foundProduct || foundProduct.is_deleted) {
     const err = new Error("No existe producto con ese ID");
     err.status = 404;
     throw err;
   }
+
   return foundProduct;
 };
 
+
 export const deleteUniqueProduct = async (id) => {
   const foundProduct = await prisma.unique_Product.findUnique({ where: { id } });
-  if (!foundProduct) {
+
+  if (!foundProduct || foundProduct.is_deleted) {
     const err = new Error("No existe producto con ese ID");
     err.status = 404;
     throw err;
@@ -51,6 +81,7 @@ export const deleteUniqueProduct = async (id) => {
   });
 };
 
+
 export const updateUniqueProduct = async ({ id, data }) => {
   const foundProduct = await prisma.unique_Product.findUnique({ where: { id } });
   if (!foundProduct) {
@@ -59,8 +90,60 @@ export const updateUniqueProduct = async ({ id, data }) => {
     throw err;
   }
 
-  return prisma.unique_Product.update({
-    where: { id },
-    data,
-  });
+  const {
+    id_brand,
+    id_product,
+    size,
+    stock,
+    ...rest
+  } = data;
+
+return prisma.unique_Product.update({
+  where: { id },
+  data: {
+    ...rest,
+    brand: id_brand ? { connect: { id: id_brand } } : undefined,
+    product: id_product ? { connect: { id: id_product } } : undefined,
+    size: size?.length
+      ? {
+          set: size, // 👈 ya viene como [{ id }]
+        }
+      : undefined,
+    stock: stock
+      ? {
+          upsert: {
+            update: { count: Number(stock.count) },
+            create: { count: Number(stock.count) },
+          },
+        }
+      : undefined,
+  },
+  include: {
+    brand: true,
+    product: true,
+    size: true,
+    stock: true,
+  },
+});
+
 };
+
+
+
+/*
+model Unique_Product {
+  id         Int      @id @default(autoincrement())
+  name       String
+  offer      Decimal
+  unit_price Decimal  @default(0)
+  color      String
+  is_deleted Boolean
+  size       Size[]
+  id_brand   Int?
+  brand      Brand?   @relation(fields: [id_brand], references: [id])
+  id_product Int?
+  product    Product? @relation(fields: [id_product], references: [id])
+  order      Order[]
+  stock      Stock?
+}
+*/

@@ -70,13 +70,21 @@ model Product {
   id             Int              @id @default(autoincrement())
   name           String
   description    String
-  url_img        String
   is_deleted     Boolean
   cart           Cart[]
   categories     Category[]
   wish_list      Wish_List[]
   uniqueProducts Unique_Product[]
+  images         ProductImage[]
 }
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  url       String
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+}
+
 
 model Unique_Product {
   id         Int      @id @default(autoincrement())
@@ -85,8 +93,7 @@ model Unique_Product {
   unit_price Decimal  @default(0)
   color      String
   is_deleted Boolean
-  id_size    Int?
-  size       Size?    @relation(fields: [id_size], references: [id])
+  size       Size[]
   id_brand   Int?
   brand      Brand?   @relation(fields: [id_brand], references: [id])
   id_product Int?
@@ -120,7 +127,6 @@ model Stock {
 model Category {
   id                 Int        @id @default(autoincrement())
   name               String
-  url_img            String
   products           Product[]
   is_deleted         Boolean
   id_category_parent Int?
