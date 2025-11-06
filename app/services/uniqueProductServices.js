@@ -8,7 +8,7 @@ export const createUniqueProduct = async (data) => {
   const product = await prisma.unique_Product.create({
     data: {
       ...rest,
-      is_deleted: rest.is_deleted ?? false,
+      is_deleted: false,
       brand: id_brand ? { connect: { id: id_brand } } : undefined,
       product: id_product ? { connect: { id: id_product } } : undefined,
       size: size?.length ? { connect: size } : undefined,
@@ -106,7 +106,7 @@ return prisma.unique_Product.update({
     product: id_product ? { connect: { id: id_product } } : undefined,
     size: size?.length
       ? {
-          set: size, // 👈 ya viene como [{ id }]
+          set: size,
         }
       : undefined,
     stock: stock
@@ -127,23 +127,3 @@ return prisma.unique_Product.update({
 });
 
 };
-
-
-
-/*
-model Unique_Product {
-  id         Int      @id @default(autoincrement())
-  name       String
-  offer      Decimal
-  unit_price Decimal  @default(0)
-  color      String
-  is_deleted Boolean
-  size       Size[]
-  id_brand   Int?
-  brand      Brand?   @relation(fields: [id_brand], references: [id])
-  id_product Int?
-  product    Product? @relation(fields: [id_product], references: [id])
-  order      Order[]
-  stock      Stock?
-}
-*/

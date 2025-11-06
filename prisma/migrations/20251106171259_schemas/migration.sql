@@ -60,7 +60,9 @@ CREATE TABLE `Product` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NOT NULL,
-    `is_deleted` BOOLEAN NOT NULL,
+    `is_deleted` BOOLEAN NOT NULL DEFAULT false,
+    `offer` DECIMAL(65, 30) NOT NULL DEFAULT 0,
+    `unit_price` DECIMAL(65, 30) NOT NULL DEFAULT 0,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -78,10 +80,8 @@ CREATE TABLE `ProductImage` (
 CREATE TABLE `Unique_Product` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `offer` DECIMAL(65, 30) NOT NULL,
-    `unit_price` DECIMAL(65, 30) NOT NULL DEFAULT 0,
     `color` VARCHAR(191) NOT NULL,
-    `is_deleted` BOOLEAN NOT NULL,
+    `is_deleted` BOOLEAN NOT NULL DEFAULT false,
     `id_brand` INTEGER NULL,
     `id_product` INTEGER NULL,
 
@@ -92,7 +92,7 @@ CREATE TABLE `Unique_Product` (
 CREATE TABLE `Size` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `size` VARCHAR(191) NOT NULL,
-    `is_deleted` BOOLEAN NOT NULL,
+    `is_deleted` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -102,7 +102,7 @@ CREATE TABLE `Brand` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `external_reference` VARCHAR(191) NOT NULL,
-    `is_deleted` BOOLEAN NOT NULL,
+    `is_deleted` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -121,7 +121,7 @@ CREATE TABLE `Stock` (
 CREATE TABLE `Category` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `is_deleted` BOOLEAN NOT NULL,
+    `is_deleted` BOOLEAN NOT NULL DEFAULT false,
     `id_category_parent` INTEGER NULL,
 
     PRIMARY KEY (`id`)

@@ -6,42 +6,29 @@ import {
   deleteProduct,
 } from "../services/productsServices.js";
 
-export const productsCreate = async (req, res) => {
+export const productsCreate = async (req, res, next) => {
   try {
-    const { name, description, url_img  } = req.body;
-
-    if (!name || !description || !url_img) {
-      return res.status(400).json({ error: "Faltan campos requeridos" });
-    }
-
-    const result = await createProduct({
-      name,
-      description,
-      url_img,
-    });
+    const result = await createProduct(req.body);
 
     res.status(201).json({
       message: "Producto creado correctamente",
       product: result,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err)
   }
 };
 
-export const productById = async (req, res) => {
+export const productById = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
-
-    const result = await searchProductById(id);
+    const result = await searchProductById(req.params.id);
     res.status(200).json({ message: "Producto encontrado", product: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err)
   }
 };
 
-export const productsList = async (req, res) => {
+export const productsList = async (req, res, next) => {
   try {
     const result = await listProducts();
     res.status(200).json({
@@ -49,51 +36,24 @@ export const productsList = async (req, res) => {
       products: result,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err)
   }
 };
 
-export const productUpdate = async (req, res) => {
+export const productUpdate = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
-
-    const data = req.body;
-    if (!data || typeof data !== "object") {
-      return res.status(400).json({ error: "Body inválido para actualización" });
-    }
-
-    const result = await updateProduct({ id, data });
+    const result = await updateProduct({ id:req.params.id, data: req.body });
     res.status(200).json({ message: "Producto actualizado", product: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const productDelete = async (req, res) => {
+export const productDelete = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
-
-    const result = await deleteProduct(id);
+    const result = await deleteProduct(req.params.id);
     res.status(200).json({ message: "Producto eliminado", product: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
-
-
-/*
-model Product {
-  id             Int              @id @default(autoincrement())
-  name           String
-  description    String
-  url_img        String
-  is_deleted     Boolean
-  cart           Cart[]
-  categories     Category[]
-  wish_list      Wish_List[]
-  uniqueProducts Unique_Product[]
-}
-
-*/

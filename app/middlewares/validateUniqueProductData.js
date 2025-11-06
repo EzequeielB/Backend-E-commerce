@@ -1,15 +1,7 @@
 export const validateUniqueProductData = (req, res, next) => {
-  const {
-    name,
-    offer,
-    unit_price,
-    color,
-    is_deleted,
-    id_brand,
-    id_product,
-    size,
-    stock,
-  } = req.body;
+  
+  const { name, color, id_brand, id_product, size, stock } =
+    req.body;
 
   if (!name || typeof name !== "string" || !name.trim()) {
     return res
@@ -17,25 +9,19 @@ export const validateUniqueProductData = (req, res, next) => {
       .json({ error: "El nombre del producto es obligatorio" });
   }
 
-  const offerNum = Number(offer);
-  if (Number.isNaN(offerNum) || offerNum < 0) {
-    return res.status(400).json({
-      error: "El campo 'offer' debe ser un número válido mayor o igual a 0",
-    });
-  }
-  req.body.offer = offerNum;
-
-  const priceNum = Number(unit_price);
-  if (Number.isNaN(priceNum) || priceNum < 0) {
-    return res.status(400).json({
-      error:
-        "El campo 'unit_price' debe ser un número válido mayor o igual a 0",
-    });
-  }
-  req.body.unit_price = priceNum;
 
   if (!color || typeof color !== "string" || !color.trim()) {
     return res.status(400).json({ error: "El color es obligatorio" });
+  }
+
+  if (id_brand !== undefined && id_brand !== null) {
+    const brandId = Number(id_brand);
+    if (Number.isNaN(brandId)) {
+      return res.status(400).json({
+        error: "El campo 'id_brand' debe ser un número válido si se incluye",
+      });
+    }
+    req.body.id_brand = brandId;
   }
 
   if (id_product !== undefined && id_product !== null) {
@@ -57,11 +43,9 @@ export const validateUniqueProductData = (req, res, next) => {
 
     const parsedSizes = size.map((s) => Number(s));
     if (parsedSizes.some((n) => Number.isNaN(n))) {
-      return res
-        .status(400)
-        .json({
-          error: "Todos los elementos de 'size' deben ser números válidos",
-        });
+      return res.status(400).json({
+        error: "Todos los elementos de 'size' deben ser números válidos",
+      });
     }
 
     req.body.size = parsedSizes.map((id) => ({ id }));

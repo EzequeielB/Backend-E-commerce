@@ -1,4 +1,6 @@
 import { Router } from "express";
+import {authMiddleware} from "../middlewares/authMiddleware.js"
+import {validateId} from "../middlewares/idValidation.js"
 import {
   productById,
   productDelete,
@@ -6,13 +8,16 @@ import {
   productsList,
   productUpdate,
 } from "../controllers/productController.js";
+import { validateProductDataCreate } from "../middlewares/validateProductDataCreate.js";
 
 const productRoutes = Router();
 
-productRoutes.post("/create", productsCreate),
+productRoutes.use(authMiddleware([1]))
+
+productRoutes.post("/create", validateProductDataCreate, productsCreate),
 productRoutes.get("/list", productsList);
-productRoutes.get("/:id", productById);
-productRoutes.delete("/delete/:id", productDelete);
-productRoutes.put("/update/:id", productUpdate);
+productRoutes.get("/:id", validateId, productById);
+productRoutes.delete("/delete/:id", validateId, productDelete);
+productRoutes.put("/update/:id", validateId, validateProductDataCreate, productUpdate);
 
 export default productRoutes;
