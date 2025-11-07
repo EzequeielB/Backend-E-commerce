@@ -91,15 +91,16 @@ export const login = async ({ user_name, password }) => {
     throw err;
   }
 
-  const token = jwt.sign(
-    {
-      id: user.id,
-      username: user.user_name,
-      roles: user.roles.map((r) => r.role.id),
-    },
-    SECRET,
-    { expiresIn: "1h" }
-  );
+const token = jwt.sign(
+  {
+    id: user.id,
+    username: user.user_name,
+    roles: user.roles.map((r) => r.role.id),
+  },
+  SECRET,
+  { expiresIn: "12h" }
+);
+
 
   const { password: _, ...userData } = user;
 

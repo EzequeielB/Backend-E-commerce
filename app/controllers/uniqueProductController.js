@@ -6,99 +6,65 @@ import {
   deleteUniqueProduct,
 } from "../services/uniqueProductServices.js";
 
-export const uniqueProductsCreate = async (req, res) => {
+export const uniqueProductsCreate = async (req, res, next) => {
   try {
-    const { name, offer, unit_price, color } = req.body;
-
-    if (!name || offer === undefined || !color || unit_price === undefined) {
-      return res.status(400).json({ error: "Faltan campos requeridos" });
-    }
-
-    const result = await createUniqueProduct({
-      name,
-      offer,
-      unit_price,
-      color,
-    });
-
+    const result = await createUniqueProduct(req.body);
     res.status(201).json({
-      message: " Unico creado correctamente",
-      product: result,
+      message: "Producto único creado correctamente",
+      unique_product: result,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const uniqueProductById = async (req, res) => {
+export const uniqueProductById = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
-
-    const result = await searchUniqueProductById(id);
-    res.status(200).json({ message: "Producto Unico encontrado", product: result });
+    const result = await searchUniqueProductById(Number(req.params.id));
+    res.status(200).json({
+      message: "Producto único encontrado",
+      unique_product: result,
+    });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const uniqueProductsList = async (req, res) => {
+export const uniqueProductsList = async (req, res, next) => {
   try {
     const result = await listUniqueProducts();
     res.status(200).json({
-      message: "Productos Unicos encontrados",
-      products: result,
+      message: "Productos únicos encontrados",
+      unique_products: result,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const uniqueProductUpdate = async (req, res) => {
+export const uniqueProductUpdate = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
-
-    const data = req.body;
-    if (!data || typeof data !== "object") {
-      return res.status(400).json({ error: "Body inválido para actualización" });
-    }
-
-    const result = await updateUniqueProduct({ id, data });
-    res.status(200).json({ message: "Producto Unico actualizado", product: result });
+    const result = await updateUniqueProduct({
+      id: Number(req.params.id),
+      data: req.body,
+    });
+    res.status(200).json({
+      message: "Producto único actualizado",
+      unique_product: result,
+    });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const uniqueProductDelete = async (req, res) => {
+export const uniqueProductDelete = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
-
-    const result = await deleteUniqueProduct(id);
-    res.status(200).json({ message: "Producto Unico eliminado", product: result });
+    const result = await deleteUniqueProduct(Number(req.params.id));
+    res.status(200).json({
+      message: "Producto único eliminado",
+      unique_product: result,
+    });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
-
-/*
-model Unique_Product {
-  id         Int      @id @default(autoincrement())
-  name       String
-  offer      Decimal
-  unit_price Decimal  @default(0)
-  color      String
-  is_deleted     Boolean
-  id_size    Int?
-  size       Size?    @relation(fields: [id_size], references: [id])
-  id_brand   Int?
-  brand      Brand?   @relation(fields: [id_brand], references: [id])
-  id_product Int?
-  product    Product? @relation(fields: [id_product], references: [id])
-  order      Order[]
-  stock      Stock?
-}
-
-*/

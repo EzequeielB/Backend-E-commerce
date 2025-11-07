@@ -3,9 +3,11 @@ import { PrismaClient } from "../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
 export const createCategory = async (data) => {
+  const { id_category_parent, ...rest } = data;
+
   return prisma.category.create({
     data: {
-      ...data,
+      ...rest,
       is_deleted: false,
     },
   });
@@ -49,8 +51,15 @@ export const updateCategory = async ({ id, data }) => {
     throw err;
   }
 
+  const { id: _ignore, id_category_parent, ...rest } = data;
+
   return prisma.category.update({
     where: { id },
-    data,
+    data: {
+      ...rest,
+      parent: id_category_parent
+        ? { connect: { id: id_category_parent } }
+        : { disconnect: true },
+    },
   });
 };
