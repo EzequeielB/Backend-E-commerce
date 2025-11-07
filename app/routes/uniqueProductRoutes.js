@@ -12,15 +12,16 @@ import {
 
 const UniqueProductRoutes = Router();
 
-UniqueProductRoutes.use(authMiddleware([1]));
+UniqueProductRoutes.use(authMiddleware([1,2]));
+UniqueProductRoutes.get("/list", uniqueProductsList);
+UniqueProductRoutes.get("/:id", validateId, uniqueProductById);
 
+UniqueProductRoutes.use(authMiddleware([1]));
 UniqueProductRoutes.post(
   "/create",
   validateUniqueProductData,
   uniqueProductsCreate
 );
-UniqueProductRoutes.get("/list", uniqueProductsList);
-UniqueProductRoutes.get("/:id", validateId, uniqueProductById);
 UniqueProductRoutes.delete("/delete/:id", validateId, uniqueProductDelete);
 UniqueProductRoutes.put(
   "/update/:id",

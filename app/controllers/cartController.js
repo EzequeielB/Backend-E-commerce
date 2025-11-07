@@ -1,77 +1,106 @@
-import { createCart, deleteCart, searchCartById, updateCart } from "../services/cartServices.js";
+import {
+  createCart,
+  deleteCart,
+  searchCartById,
+  updateCart,
+  listCarts,
+  searchCartByUserId,
+} from "../services/cartServices.js";
+import { PrismaClient } from "../generated/prisma/index.js";
 
+const prisma = new PrismaClient();
 
-export const cartsCreate = async (req, res) => {
+export const cartsCreate = async (req, res, next) => {
   try {
-    const data = req.body;
-    if (!data || typeof data !== "object") {
-      return res
-        .status(400)
-        .json({ error: "Body inválido para actualización" });
+    const { items } = req.body; 
+
+    if (items?.length) {
+      for (const p of items) {
+        const unique = await prisma.unique_Product.findUnique({
+          where: { id: p.id_uniqueProduct },
+          include: { stock: true },
+        });
+
+        if (!unique || !unique.stock || p.units > unique.stock.count) {
+          return res.status(400).json({
+            error: `Stock insuficiente para el producto ${unique?.name || p.id_uniqueProduct}`,
+          });
+        }
+      }
     }
 
-    const result = await createCart(data);
-
+    const result = await createCart(req.body);
     res.status(201).json({
-      message: "Carto creado correctamente",
+      message: "Carrito creado correctamente",
       cart: result,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const cartById = async (req, res) => {
+export const cartById = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
-
-    const result = await searchCartById(id);
-    res.status(200).json({ message: "Carto encontrado", cart: result });
+    const result = await searchCartById(Number(req.params.id));
+    res.status(200).json({ message: "Carrito encontrado", cart: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const cartsList = async (req, res) => {
+export const cartByUserId = async (req, res, next) => {
+  try {
+    const result = await searchCartByUserId(Number(req.params.id));
+    res.status(200).json({ message: "Carrito encontrado", cart: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const cartsList = async (req, res, next) => {
   try {
     const result = await listCarts();
     res.status(200).json({
-      message: "Cartos encontrados",
+      message: "Carritos encontrados",
       carts: result,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const cartUpdate = async (req, res) => {
+export const cartUpdate = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
+    const { items } = req.body;
 
-    const data = req.body;
-    if (!data || typeof data !== "object") {
-      return res
-        .status(400)
-        .json({ error: "Body inválido para actualización" });
+    if (items?.length) {
+      for (const p of items) {
+        const unique = await prisma.unique_Product.findUnique({
+          where: { id: p.id_uniqueProduct },
+          include: { stock: true },
+        });
+
+        if (!unique || !unique.stock || p.units > unique.stock.count) {
+          return res.status(400).json({
+            error: `Stock insuficiente para el producto ${unique?.name || p.id_uniqueProduct}`,
+          });
+        }
+      }
     }
 
-    const result = await updateCart({ id, data });
-    res.status(200).json({ message: "Carto actualizado", cart: result });
+    const result = await updateCart({ id: Number(req.params.id), data: req.body });
+    res.status(200).json({ message: "Carrito actualizado", cart: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };
 
-export const cartDelete = async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) return res.status(400).json({ error: "ID inválido" });
 
-    const result = await deleteCart(id);
-    res.status(200).json({ message: "Carto eliminado", cart: result });
+export const cartDelete = async (req, res, next) => {
+  try {
+    const result = await deleteCart(Number(req.params.id));
+    res.status(200).json({ message: "Carrito eliminado", cart: result });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 };

@@ -7,10 +7,12 @@ import { brandById, brandDelete, brandsCreate, brandsList, brandUpdate } from ".
 
 const brandRoutes = Router();
 
-brandRoutes.use(authMiddleware([1]))
-brandRoutes.post("/create", validateBrandData, brandsCreate),
+brandRoutes.use(authMiddleware([1,2]))
 brandRoutes.get("/list", brandsList);
 brandRoutes.get("/:id", validateId, brandById);
+
+brandRoutes.use(authMiddleware([1]))
+brandRoutes.post("/create", validateBrandData, brandsCreate),
 brandRoutes.delete("/delete/:id", validateId, brandDelete);
 brandRoutes.put("/update/:id", validateId, validateBrandData, brandUpdate);
 

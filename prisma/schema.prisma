@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -15,16 +10,17 @@ datasource db {
 }
 
 model User {
-  id               Int               @id @default(autoincrement())
-  user_name        String            @unique
-  email            String            @unique
-  password         String
-  CreadoEn         DateTime          @default(now()) @map("created_at")
-  cart             Cart?
-  roles            UserRole[]
-  wish_list        Wish_List?
-  reset_token      Reset_token?
-  shipping_Address Shipping_Address?
+  id                 Int                @id @default(autoincrement())
+  user_name          String             @unique
+  email              String             @unique
+  password           String
+  CreadoEn           DateTime           @default(now()) @map("created_at")
+  cart               Cart?
+  roles              UserRole[]
+  wish_list          Wish_List?
+  reset_token        Reset_token?
+  shipping_Addresses Shipping_Address[]
+  orders             Order[] 
 }
 
 model Role {
@@ -59,11 +55,24 @@ model Wish_List {
 }
 
 model Cart {
-  id       Int       @id @default(autoincrement())
-  units    Int
-  id_user  Int?      @unique
-  usuario  User?     @relation(fields: [id_user], references: [id])
-  products Product[]
+  id      Int        @id @default(autoincrement())
+  id_user Int?       @unique
+  usuario User?      @relation(fields: [id_user], references: [id])
+  items   CartItem[]
+}
+
+model CartItem {
+  id            Int     @id @default(autoincrement())
+  units         Int
+  unit_price    Decimal 
+  offer_applied Decimal
+  subtotal      Decimal 
+
+  id_cart Int
+  cart    Cart @relation(fields: [id_cart], references: [id], onDelete: Cascade)
+
+  id_uniqueProduct Int
+  uniqueProduct    Unique_Product @relation(fields: [id_uniqueProduct], references: [id])
 }
 
 model Product {
@@ -73,7 +82,6 @@ model Product {
   is_deleted     Boolean          @default(false)
   offer          Decimal          @default(0)
   unit_price     Decimal          @default(0)
-  cart           Cart[]
   categories     Category[]
   wish_list      Wish_List[]
   uniqueProducts Unique_Product[]
@@ -88,23 +96,24 @@ model ProductImage {
 }
 
 model Unique_Product {
-  id         Int      @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   name       String
   color      String
-  is_deleted Boolean @default(false)
+  is_deleted Boolean     @default(false)
   size       Size[]
   id_brand   Int?
-  brand      Brand?   @relation(fields: [id_brand], references: [id])
+  brand      Brand?      @relation(fields: [id_brand], references: [id])
   id_product Int?
-  product    Product? @relation(fields: [id_product], references: [id])
-  order      Order[]
+  product    Product?    @relation(fields: [id_product], references: [id])
+  orderItems OrderItem[]
+  cartItems  CartItem[]
   stock      Stock?
 }
 
 model Size {
   id             Int              @id @default(autoincrement())
   size           String
-  is_deleted     Boolean @default(false)
+  is_deleted     Boolean          @default(false)
   unique_product Unique_Product[]
 }
 
@@ -112,7 +121,7 @@ model Brand {
   id                 Int              @id @default(autoincrement())
   name               String
   external_reference String
-  is_deleted         Boolean @default(false)
+  is_deleted         Boolean          @default(false)
   unique_product     Unique_Product[]
 }
 
@@ -127,7 +136,7 @@ model Category {
   id                 Int        @id @default(autoincrement())
   name               String
   products           Product[]
-  is_deleted         Boolean @default(false)
+  is_deleted         Boolean    @default(false)
   id_category_parent Int?
   parent             Category?  @relation("CategoryToParent", fields: [id_category_parent], references: [id])
   children           Category[] @relation("CategoryToParent")
@@ -137,32 +146,34 @@ model Reset_token {
   id         Int      @id @default(autoincrement())
   token      String
   created_at DateTime
-  used       Boolean 
+  used       Boolean
   id_user    Int?     @unique
   usuario    User?    @relation(fields: [id_user], references: [id])
 }
 
 model Shipping_Address {
-  id             Int    @id @default(autoincrement())
-  id_user        Int?   @unique
-  usuario        User?  @relation(fields: [id_user], references: [id])
+  id      Int  @id @default(autoincrement())
+  id_user Int
+  usuario User @relation(fields: [id_user], references: [id])
+
   address_line_1 String
   address_line_2 String
   city           String
   postal_code    String
   country        String
-  order          Order?
+  order          Order[]
 }
 
 model Shipment {
-  id              Int               @id @default(autoincrement())
+  id              Int             @id @default(autoincrement())
   tracking_number String
   status          String
-  shipped_at      DateTime          @default(now())
+  shipped_at      DateTime        @default(now())
   delivered_at    DateTime
-  id_order        Int?              @unique
-  order           Order?            @relation(fields: [id_order], references: [id])
-  shipment_method Shipping_Method[]
+  id_order        Int?            @unique
+  order           Order?          @relation(fields: [id_order], references: [id])
+  id_method       Int
+  method          Shipping_Method @relation(fields: [id_method], references: [id])
 }
 
 model Shipping_Method {
@@ -172,17 +183,31 @@ model Shipping_Method {
   stimated_delivery_time Int
   cost                   Decimal
   is_deleted             Boolean
-  shipment               Shipment[]
+  shipments              Shipment[]
 }
 
 model Order {
-  id                 Int               @id @default(autoincrement())
-  id_shipping_addres Int?              @unique
-  shipping_Adress    Shipping_Address? @relation(fields: [id_shipping_addres], references: [id])
-  unique_product     Unique_Product[]
-  shipment           Shipment?
-  id_detail          Int?              @unique
-  detail             Detail?           @relation(fields: [id_detail], references: [id])
+  id                  Int              @id @default(autoincrement())
+  id_user             Int
+  usuario             User             @relation(fields: [id_user], references: [id])
+  id_shipping_address Int
+  shipping_Address    Shipping_Address @relation(fields: [id_shipping_address], references: [id])
+  items               OrderItem[]
+  shipment            Shipment?
+  id_detail           Int?             @unique
+  detail              Detail?          @relation(fields: [id_detail], references: [id])
+}
+
+model OrderItem {
+  id               Int            @id @default(autoincrement())
+  units            Int
+  unit_price       Decimal
+  offer_applied    Decimal
+  subtotal         Decimal
+  id_order         Int
+  order            Order          @relation(fields: [id_order], references: [id])
+  id_uniqueProduct Int
+  uniqueProduct    Unique_Product @relation(fields: [id_uniqueProduct], references: [id])
 }
 
 model Detail {

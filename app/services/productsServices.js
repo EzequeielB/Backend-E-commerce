@@ -3,7 +3,6 @@ import { PrismaClient } from "../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
 export const createProduct = async (data) => {
-  console.log("esta es la data:   ",data)
   const { categories, uniqueProducts, images, ...rest } = data;
   return prisma.product.create({
     data: {

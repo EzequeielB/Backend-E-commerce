@@ -48,10 +48,22 @@ CREATE TABLE `Wish_List` (
 -- CreateTable
 CREATE TABLE `Cart` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `units` INTEGER NOT NULL,
     `id_user` INTEGER NULL,
 
     UNIQUE INDEX `Cart_id_user_key`(`id_user`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `CartItem` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `units` INTEGER NOT NULL,
+    `unit_price` DECIMAL(65, 30) NOT NULL,
+    `offer_applied` DECIMAL(65, 30) NOT NULL,
+    `subtotal` DECIMAL(65, 30) NOT NULL,
+    `id_cart` INTEGER NOT NULL,
+    `id_uniqueProduct` INTEGER NOT NULL,
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -142,14 +154,13 @@ CREATE TABLE `Reset_token` (
 -- CreateTable
 CREATE TABLE `Shipping_Address` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `id_user` INTEGER NULL,
+    `id_user` INTEGER NOT NULL,
     `address_line_1` VARCHAR(191) NOT NULL,
     `address_line_2` VARCHAR(191) NOT NULL,
     `city` VARCHAR(191) NOT NULL,
     `postal_code` VARCHAR(191) NOT NULL,
     `country` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `Shipping_Address_id_user_key`(`id_user`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -161,6 +172,7 @@ CREATE TABLE `Shipment` (
     `shipped_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `delivered_at` DATETIME(3) NOT NULL,
     `id_order` INTEGER NULL,
+    `id_method` INTEGER NOT NULL,
 
     UNIQUE INDEX `Shipment_id_order_key`(`id_order`),
     PRIMARY KEY (`id`)
@@ -181,11 +193,24 @@ CREATE TABLE `Shipping_Method` (
 -- CreateTable
 CREATE TABLE `Order` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `id_shipping_addres` INTEGER NULL,
+    `id_user` INTEGER NOT NULL,
+    `id_shipping_address` INTEGER NOT NULL,
     `id_detail` INTEGER NULL,
 
-    UNIQUE INDEX `Order_id_shipping_addres_key`(`id_shipping_addres`),
     UNIQUE INDEX `Order_id_detail_key`(`id_detail`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `OrderItem` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `units` INTEGER NOT NULL,
+    `unit_price` DECIMAL(65, 30) NOT NULL,
+    `offer_applied` DECIMAL(65, 30) NOT NULL,
+    `subtotal` DECIMAL(65, 30) NOT NULL,
+    `id_order` INTEGER NOT NULL,
+    `id_uniqueProduct` INTEGER NOT NULL,
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -215,15 +240,6 @@ CREATE TABLE `_PermissionToRole` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `_CartToProduct` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_CartToProduct_AB_unique`(`A`, `B`),
-    INDEX `_CartToProduct_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `_ProductToWish_List` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
@@ -250,24 +266,6 @@ CREATE TABLE `_CategoryToProduct` (
     INDEX `_CategoryToProduct_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
-CREATE TABLE `_ShipmentToShipping_Method` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_ShipmentToShipping_Method_AB_unique`(`A`, `B`),
-    INDEX `_ShipmentToShipping_Method_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `_OrderToUnique_Product` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_OrderToUnique_Product_AB_unique`(`A`, `B`),
-    INDEX `_OrderToUnique_Product_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- AddForeignKey
 ALTER TABLE `UserRole` ADD CONSTRAINT `UserRole_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -279,6 +277,12 @@ ALTER TABLE `Wish_List` ADD CONSTRAINT `Wish_List_id_user_fkey` FOREIGN KEY (`id
 
 -- AddForeignKey
 ALTER TABLE `Cart` ADD CONSTRAINT `Cart_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `CartItem` ADD CONSTRAINT `CartItem_id_cart_fkey` FOREIGN KEY (`id_cart`) REFERENCES `Cart`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `CartItem` ADD CONSTRAINT `CartItem_id_uniqueProduct_fkey` FOREIGN KEY (`id_uniqueProduct`) REFERENCES `Unique_Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ProductImage` ADD CONSTRAINT `ProductImage_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -299,28 +303,34 @@ ALTER TABLE `Category` ADD CONSTRAINT `Category_id_category_parent_fkey` FOREIGN
 ALTER TABLE `Reset_token` ADD CONSTRAINT `Reset_token_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Shipping_Address` ADD CONSTRAINT `Shipping_Address_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Shipping_Address` ADD CONSTRAINT `Shipping_Address_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Shipment` ADD CONSTRAINT `Shipment_id_order_fkey` FOREIGN KEY (`id_order`) REFERENCES `Order`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Order` ADD CONSTRAINT `Order_id_shipping_addres_fkey` FOREIGN KEY (`id_shipping_addres`) REFERENCES `Shipping_Address`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Shipment` ADD CONSTRAINT `Shipment_id_method_fkey` FOREIGN KEY (`id_method`) REFERENCES `Shipping_Method`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Order` ADD CONSTRAINT `Order_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Order` ADD CONSTRAINT `Order_id_shipping_address_fkey` FOREIGN KEY (`id_shipping_address`) REFERENCES `Shipping_Address`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Order` ADD CONSTRAINT `Order_id_detail_fkey` FOREIGN KEY (`id_detail`) REFERENCES `Detail`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_id_order_fkey` FOREIGN KEY (`id_order`) REFERENCES `Order`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_id_uniqueProduct_fkey` FOREIGN KEY (`id_uniqueProduct`) REFERENCES `Unique_Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_PermissionToRole` ADD CONSTRAINT `_PermissionToRole_A_fkey` FOREIGN KEY (`A`) REFERENCES `Permission`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_PermissionToRole` ADD CONSTRAINT `_PermissionToRole_B_fkey` FOREIGN KEY (`B`) REFERENCES `Role`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_CartToProduct` ADD CONSTRAINT `_CartToProduct_A_fkey` FOREIGN KEY (`A`) REFERENCES `Cart`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_CartToProduct` ADD CONSTRAINT `_CartToProduct_B_fkey` FOREIGN KEY (`B`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_ProductToWish_List` ADD CONSTRAINT `_ProductToWish_List_A_fkey` FOREIGN KEY (`A`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -339,15 +349,3 @@ ALTER TABLE `_CategoryToProduct` ADD CONSTRAINT `_CategoryToProduct_A_fkey` FORE
 
 -- AddForeignKey
 ALTER TABLE `_CategoryToProduct` ADD CONSTRAINT `_CategoryToProduct_B_fkey` FOREIGN KEY (`B`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_ShipmentToShipping_Method` ADD CONSTRAINT `_ShipmentToShipping_Method_A_fkey` FOREIGN KEY (`A`) REFERENCES `Shipment`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_ShipmentToShipping_Method` ADD CONSTRAINT `_ShipmentToShipping_Method_B_fkey` FOREIGN KEY (`B`) REFERENCES `Shipping_Method`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_OrderToUnique_Product` ADD CONSTRAINT `_OrderToUnique_Product_A_fkey` FOREIGN KEY (`A`) REFERENCES `Order`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_OrderToUnique_Product` ADD CONSTRAINT `_OrderToUnique_Product_B_fkey` FOREIGN KEY (`B`) REFERENCES `Unique_Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

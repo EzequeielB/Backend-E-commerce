@@ -13,11 +13,13 @@ import {
 
 const categoryRoutes = Router();
 
-categoryRoutes.use(authMiddleware([1]));
+categoryRoutes.use(authMiddleware([1,2]));
 categoryRoutes.get("/list", categorysList);
+categoryRoutes.get("/:id", validateId, categoryById);
+
+categoryRoutes.use(authMiddleware([1]));
 categoryRoutes.post("/create",validateCategoryData ,categorysCreate);
 categoryRoutes.put("/update/:id", validateId, validateCategoryData, categoryUpdate);
-categoryRoutes.get("/:id", validateId, categoryById);
 categoryRoutes.delete("/delete/:id", validateId, categoryDelete);
 
 export default categoryRoutes;

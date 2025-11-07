@@ -12,11 +12,12 @@ import { validateProductDataCreate } from "../middlewares/validateProductDataCre
 
 const productRoutes = Router();
 
-productRoutes.use(authMiddleware([1]))
 
-productRoutes.post("/create", validateProductDataCreate, productsCreate),
 productRoutes.get("/list", productsList);
 productRoutes.get("/:id", validateId, productById);
+
+productRoutes.use(authMiddleware([1]))
+productRoutes.post("/create", validateProductDataCreate, productsCreate),
 productRoutes.delete("/delete/:id", validateId, productDelete);
 productRoutes.put("/update/:id", validateId, validateProductDataCreate, productUpdate);
 

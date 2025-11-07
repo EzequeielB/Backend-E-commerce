@@ -6,10 +6,12 @@ import { sizeById, sizeDelete, sizesCreate, sizesList, sizeUpdate } from "../con
 
 const sizeRoutes = Router();
 
-sizeRoutes.use(authMiddleware([1]));
-sizeRoutes.post("/create", validateSizeData, sizesCreate),
+sizeRoutes.use(authMiddleware([1,2]));
 sizeRoutes.get("/list", sizesList);
 sizeRoutes.get("/:id", validateId, sizeById);
+
+sizeRoutes.use(authMiddleware([1]));
+sizeRoutes.post("/create", validateSizeData, sizesCreate),
 sizeRoutes.delete("/delete/:id", validateId, sizeDelete);
 sizeRoutes.put("/update/:id", validateId, validateSizeData, sizeUpdate);
 
