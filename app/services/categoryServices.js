@@ -9,9 +9,6 @@ export const createCategory = async (data) => {
     data: {
       ...rest,
       is_deleted: false,
-      parent: id_category_parent
-        ? { connect: { id: id_category_parent } }
-        : undefined,
     },
   });
 };
